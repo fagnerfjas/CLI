@@ -3,7 +3,10 @@ package Cli;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import org.hamcrest.core.IsNot;
+
 import weka.classifiers.bayes.BayesNet;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
@@ -18,20 +21,26 @@ public class Classificador {
 	private Instances instancias;
 	private BayesNet classificador;
 
-	public void Classificador(String urlArquivo) throws Exception {
-		setArquivo(urlArquivo);
+	
+	
+	public Classificador(String url) {
+		setArquivo(url);
 		setInstancias(this.dataBase);
-		
+
 		classificador = new BayesNet();
-		classificador.buildClassifier(instancias);
+		try {
+			classificador.buildClassifier(instancias);
+		} catch (Exception e) {
+			System.out.println("Erro: " + e.getMessage());
+		}
 	}
+
 	
-	public void status(){
-		System.out.println(
-				"Atributos: " + this.instancias.numAttributes()
-				);
+	
+	public void status() {
+		System.out.println("Atributos: " + this.instancias.numAttributes());
 	}
-	
+
 	/**
 	 * Definindo index
 	 * 
@@ -55,6 +64,8 @@ public class Classificador {
 		}
 	}
 
+	
+	
 	/**
 	 * Carrega o arquivo de base de dados para treinamento do algoritmo
 	 * 
@@ -73,4 +84,33 @@ public class Classificador {
 			System.out.println("Arquivo não encontrado!!!");
 		}
 	}
+
+	
+	/** 							INCOMPLETA
+	 * Cria uma nova instancia
+	 * @return
+	 */
+	public Instance novaInstancia() {
+		
+		Instance newInst = new Instance( instancias.numAttributes() );
+		newInst.setDataset(this.instancias);
+		newInst.setValue(0, 0); // gravidez
+		newInst.setValue(1, 180); // Concentração de glicose
+		newInst.setValue(2, 72); // pressão diastólica
+		newInst.setValue(3, 35);
+		newInst.setValue(4, 0);
+		newInst.setValue(5, 33.6);
+		newInst.setValue(6, 0.627);
+		newInst.setValue(7, 50); // idade
+		
+		if(instancias.checkInstance(newInst)){
+			return newInst;
+		}
+		return null;
+	}
+
+	public double calssificar(Instance instancia) throws Exception{
+		return classificador.classifyInstance( instancia );
+	}
+	
 }

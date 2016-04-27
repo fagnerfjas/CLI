@@ -1,4 +1,5 @@
 import Cli.Classificador;
+import weka.core.Instance;
 
 /**
  * @version 0.1 Classificador Lia IFPB, Campina Grande, 2016
@@ -9,9 +10,16 @@ import Cli.Classificador;
 
 public class Main {
 
-	public static void main(String[] args) {
-		Classificador clas = new Classificador();
-		System.out.println("olá");
-		clas.setArquivo("url/arquivo.arff");
+	private static Classificador classificador;
+
+	public static void main(String[] args) throws Exception  {
+		
+		String url = "data/diabetes.arff";
+		classificador = new  Classificador(url);
+		
+		Instance newInst = classificador.novaInstancia();
+		
+		System.out.println( classificador.calssificar(newInst) );
+	
 	}
 }
