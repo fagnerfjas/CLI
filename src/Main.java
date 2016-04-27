@@ -9,7 +9,6 @@ import weka.core.Instance;
 
 
 public class Main {
-
 	private static Classificador classificador;
 
 	public static void main(String[] args) throws Exception  {
@@ -20,6 +19,6 @@ public class Main {
 		Instance newInst = classificador.novaInstancia();
 		
 		System.out.println( classificador.calssificar(newInst) );
-	
 	}
 }
+

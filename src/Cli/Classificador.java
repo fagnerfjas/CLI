@@ -41,9 +41,9 @@ public class Classificador {
 		System.out.println("Atributos: " + this.instancias.numAttributes());
 	}
 
+	
 	/**
 	 * Definindo index
-	 * 
 	 * @param index
 	 */
 	private void setIndex(int index) {
@@ -68,7 +68,6 @@ public class Classificador {
 	
 	/**
 	 * Carrega o arquivo de base de dados para treinamento do algoritmo
-	 * 
 	 * @param urlFile
 	 * @throws Exception
 	 */
