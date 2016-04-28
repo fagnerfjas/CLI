@@ -34,8 +34,26 @@ public class Classificador {
 			System.out.println("Erro: " + e.getMessage());
 		}
 	}
+	
+	
+	public void listAtributos(){
+		for (int i = 0; i < (getInstancias().numAttributes()); i++) {
+			System.out.println( instancias.attribute(i) );
+		}
+	}
 
 	
+	public BayesNet getClassificador(){
+		return classificador;
+	}
+	
+	public Instances getInstancias(){
+		return instancias;
+	}
+	
+	public DataSource getDatabase(){
+		return dataBase;
+	}
 	
 	public void status() {
 		System.out.println("Atributos: " + this.instancias.numAttributes());

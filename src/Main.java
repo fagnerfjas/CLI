@@ -18,7 +18,7 @@ public class Main {
 		
 		Instance newInst = classificador.novaInstancia();
 		
-		System.out.println( classificador.calssificar(newInst) );
+		classificador.listAtributos();
 	}
 }
 
