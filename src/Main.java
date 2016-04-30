@@ -1,4 +1,5 @@
 import Cli.Classificador;
+import Cli.extra.FileManager;
 import weka.core.Instance;
 
 /**
@@ -10,15 +11,21 @@ import weka.core.Instance;
 
 public class Main {
 	private static Classificador classificador;
-
+	private static FileManager file;
+	
 	public static void main(String[] args) throws Exception  {
 		
 		String url = "data/diabetes.arff";
-		classificador = new  Classificador(url);
+		String excel = "data/instancia_teste.xls";
+		//classificador = new  Classificador(url);
+		file = new FileManager(excel);
 		
-		Instance newInst = classificador.novaInstancia();
 		
-		classificador.listAtributos();
+		//Instance newInst = classificador.novaInstancia();
+		
+		//classificador.listAtributos();
+		
+		file.showData();
 	}
 }
 

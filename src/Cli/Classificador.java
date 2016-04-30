@@ -1,13 +1,12 @@
 package Cli;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-
-import org.hamcrest.core.IsNot;
+import java.io.IOException;
 
 import weka.classifiers.bayes.BayesNet;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.converters.ArffSaver;
 import weka.core.converters.ConverterUtils.DataSource;
 
 /**
@@ -17,117 +16,88 @@ import weka.core.converters.ConverterUtils.DataSource;
  */
 public class Classificador {
 
+	private String urlFileDataBase;
 	private DataSource dataBase;
-	private Instances instancias;
-	private BayesNet classificador;
-
+	private Instances instances;
+	private BayesNet classify;
+	private Instance testInstance;
 	
 	
-	public Classificador(String url) {
-		setArquivo(url);
-		setInstancias(this.dataBase);
-
-		classificador = new BayesNet();
-		try {
-			classificador.buildClassifier(instancias);
-		} catch (Exception e) {
-			System.out.println("Erro: " + e.getMessage());
+	public Classificador(String urlFileDataBase) throws Exception{
+		if( setFileDataBase(urlFileDataBase) ){
+			dataBase = new DataSource(this.urlFileDataBase);
+			instances = dataBase.getDataSet();
+			instances.setClassIndex( instances.numAttributes() - 1);
+			classify = new BayesNet();
+			classify.buildClassifier(instances);
+			testInstance = instances.lastInstance();
 		}
 	}
-	
-	
-	public void listAtributos(){
-		for (int i = 0; i < (getInstancias().numAttributes()); i++) {
-			System.out.println( instancias.attribute(i) );
-		}
-	}
-
-	
-	public BayesNet getClassificador(){
-		return classificador;
-	}
-	
-	public Instances getInstancias(){
-		return instancias;
-	}
-	
-	public DataSource getDatabase(){
-		return dataBase;
-	}
-	
-	public void status() {
-		System.out.println("Atributos: " + this.instancias.numAttributes());
-	}
-
 	
 	/**
-	 * Definindo index
-	 * @param index
+	 * Seta um novo arquivo para base de dados
+	 * @param urlFileDataBase
 	 */
-	private void setIndex(int index) {
-		this.instancias.setClassIndex(index);
-	}
-
-	/**
-	 * Carregar instâncias, e define o index como sendo o ultimo atributo.
-	 * 
-	 * @param dataBase
-	 */
-	private void setInstancias(DataSource dataBase) {
-		try {
-			this.instancias = this.dataBase.getDataSet();
-			setIndex(this.instancias.numAttributes() - 1);
-		} catch (Exception e) {
-			System.out.println("erro: " + e.getMessage());
+	public boolean setFileDataBase(String urlFileDataBase){
+		File fileDataBase = new File(urlFileDataBase);
+		if (fileDataBase.exists()) {
+			this.urlFileDataBase = urlFileDataBase;
+			return true;
 		}
+		System.out.println("Erro: Arquivo de base de dados não encontrado");
+		return false;
 	}
-
-	
 	
 	/**
-	 * Carrega o arquivo de base de dados para treinamento do algoritmo
-	 * @param urlFile
+	 * Classifica uma nova instância e retorna o seu valor
+	 * @param inst
+	 * @return
 	 * @throws Exception
 	 */
-	public void setArquivo(String urlArquivo) {
-		File arquivo = new File(urlArquivo);
-		if (arquivo.exists()) {
-			try {
-				this.dataBase = new DataSource(urlArquivo);
-			} catch (Exception e) {
-				System.out.println("Erro: " + e.getMessage());
-			}
-		} else {
-			System.out.println("Arquivo não encontrado!!!");
-		}
+	public double classificar(Instance inst) throws Exception{
+		return this.classify.classifyInstance(inst);
 	}
-
-	
-	/** 							INCOMPLETA
-	 * Cria uma nova instancia
+	/**
+	 * Recebe o indice da instancia a ser classificada
+	 * @param indexInstance
 	 * @return
+	 * @throws Exception
 	 */
-	public Instance novaInstancia() {
-		
-		Instance newInst = new Instance( instancias.numAttributes() );
-		newInst.setDataset(this.instancias);
-		newInst.setValue(0, 0); // gravidez
-		newInst.setValue(1, 180); // Concentração de glicose
-		newInst.setValue(2, 72); // pressão diastólica
-		newInst.setValue(3, 35);
-		newInst.setValue(4, 0);
-		newInst.setValue(5, 33.6);
-		newInst.setValue(6, 0.627);
-		newInst.setValue(7, 50); // idade
-		
-		if(instancias.checkInstance(newInst)){
-			return newInst;
-		}
-		return null;
+	public double classificar(int indexInstance) throws Exception{
+		return classificar(this.instances.instance(indexInstance));
 	}
-
-	public double calssificar(Instance instancia) throws Exception{
-		return classificador.classifyInstance( instancia );
+	/**
+	 * classifica a ultima instância da base de dados
+	 * @return
+	 * @throws Exception
+	 */
+	public double classificar() throws Exception{
+		return classificar( this.instances.lastInstance() );
 	}
 	
+	public Instance setInstance(String urlFile) throws Exception {
+		File testFile = new File(urlFile);
+		if(!testFile.exists()){
+			return null;
+		}
+		
+		DataSource dado = new DataSource(urlFile);
+		Instances insts = dado.getDataSet();
+		insts.setClassIndex(insts.numAttributes() - 1);
+		this.instances.add(insts.lastInstance());
+		return insts.lastInstance();
+			
+	}
+	
+	public void salvaInstancia() throws IOException{
+		ArffSaver saver = new ArffSaver();
+		saver.setInstances(this.instances);
+		saver.setFile(new File(	this.urlFileDataBase ));
+		//saver.setDestination(new File( this.urlFileDataBase ));  
+		saver.writeBatch();
+	}
+	
+	public Instances getInstances(){
+		return this.instances;
+	}
 }
