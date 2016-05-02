@@ -29,6 +29,24 @@ public class TestCli {
 		System.out.println( classificador.classificar(instancia) );
 		classificador.salvaInstancia();
 		
+		classificador.classificarLiteral(instancia);
+		
+	}
+	
+	@Test
+	public void testInstanciaPorArray() throws Exception{
+		classificador.setFileDataBase("data/weather.arff"); 
+		
+		String[] valores = new String[10];
+		valores[0] = "rainy";
+		valores[1] = "70";
+		valores[2] = "96";
+		valores[3] = "FALSE";
+		Instance instancia = classificador.setInstance(valores); 
+		
+		 classificador.classificarLiteral( instancia );
+		 System.out.println(classificador.classificar( instancia));
+		 classificador.salvaInstancia();
 	}
 
 }

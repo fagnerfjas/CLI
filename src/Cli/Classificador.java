@@ -4,12 +4,14 @@ import java.io.File;
 import java.io.IOException;
 
 import weka.classifiers.bayes.BayesNet;
+import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.supervised.attribute.Discretize;
 
-/**
+/**  
  * @version 0.1 Classificador Lia IFPB, Campina Grande, 2016
  * @author Fagner Jefferson
  *
@@ -21,12 +23,16 @@ public class Classificador {
 	private Instances instances;
 	private BayesNet classify;
 	private Instance testInstance;
+	private Discretize filter;
 	
 	
 	public Classificador(String urlFileDataBase) throws Exception{
+		filter = new Discretize();
+		
 		if( setFileDataBase(urlFileDataBase) ){
 			dataBase = new DataSource(this.urlFileDataBase);
 			instances = dataBase.getDataSet();
+			//filter.setInputFormat(instances);
 			instances.setClassIndex( instances.numAttributes() - 1);
 			classify = new BayesNet();
 			classify.buildClassifier(instances);
@@ -75,6 +81,29 @@ public class Classificador {
 		return classificar( this.instances.lastInstance() );
 	}
 	
+	
+	
+	/**
+	 * Classifica uma instância e da como responsta o atributo index, na forma 
+	 * escrita.
+	 * @param instancia
+	 * @throws Exception
+	 */
+	public void classificarLiteral(Instance instancia) throws Exception{
+		int indexAtt = instances.numAttributes() - 1;
+		Attribute att = instances.attribute( indexAtt );
+		int n = (int) classificar(instancia);
+		System.out.println(att.value(n));
+	}
+	
+	
+	
+	/**
+	 * Retorna a ultima instancia de um arquivo .arff
+	 * @param urlFile
+	 * @return
+	 * @throws Exception
+	 */
 	public Instance setInstance(String urlFile) throws Exception {
 		File testFile = new File(urlFile);
 		if(!testFile.exists()){
@@ -85,10 +114,36 @@ public class Classificador {
 		Instances insts = dado.getDataSet();
 		insts.setClassIndex(insts.numAttributes() - 1);
 		this.instances.add(insts.lastInstance());
-		return insts.lastInstance();
-			
+		return insts.lastInstance();	
 	}
 	
+	/**
+	 * Transforma um array de string e uma instancia
+	 * @param values
+	 * @return
+	 */
+	public Instance setInstance(String[] values){
+		int nAttributos = instances.numAttributes();
+		Instance newInst = new Instance(nAttributos);
+		newInst.setDataset(instances);
+		
+		for (int i = 0; i < nAttributos; i++) {
+			if( values[i] != null ){
+				try {
+					double val = Double.parseDouble(values[i]);
+					newInst.setValue(i, val);
+				} catch (Exception e) {	
+					newInst.setValue(i, values[i]);
+				}
+			}
+		}
+		return newInst;
+	}	
+	
+	/**
+	 * salva todas as instancias carregadas para o arquivo de base de dados
+	 * @throws IOException
+	 */
 	public void salvaInstancia() throws IOException{
 		ArffSaver saver = new ArffSaver();
 		saver.setInstances(this.instances);
