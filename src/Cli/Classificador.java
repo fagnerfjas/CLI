@@ -78,7 +78,7 @@ public class Classificador {
 	 * @throws Exception
 	 */
 	public double classificar() throws Exception{
-		return classificar( this.instances.lastInstance() );
+		return classificar( this.testInstance );
 	}
 	
 	
@@ -114,6 +114,7 @@ public class Classificador {
 		Instances insts = dado.getDataSet();
 		insts.setClassIndex(insts.numAttributes() - 1);
 		this.instances.add(insts.lastInstance());
+		this.testInstance = insts.lastInstance();
 		return insts.lastInstance();	
 	}
 	
@@ -154,5 +155,9 @@ public class Classificador {
 	
 	public Instances getInstances(){
 		return this.instances;
+	}
+	
+	public Instance getTestinstance(){
+		return this.testInstance;
 	}
 }

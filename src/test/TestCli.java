@@ -48,5 +48,7 @@ public class TestCli {
 		 System.out.println(classificador.classificar( instancia));
 		 classificador.salvaInstancia();
 	}
+	
+	
 
 }
