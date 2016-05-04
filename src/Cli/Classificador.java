@@ -1,6 +1,9 @@
 package Cli;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
 import weka.classifiers.bayes.BayesNet;
@@ -8,6 +11,7 @@ import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
+import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.supervised.attribute.Discretize;
 
@@ -159,5 +163,43 @@ public class Classificador {
 	
 	public Instance getTestinstance(){
 		return this.testInstance;
+	}
+	
+	
+	/**
+	 * Faz a leitura de um arquivo csv e retorna suas instâncias
+	 * @param urlFileCsv
+	 * @return
+	 * @throws IOException
+	 */
+	public Instances loadCsv(String urlFileCsv) throws IOException{
+		File arquivoCsv = new File(urlFileCsv);
+		if( arquivoCsv.exists() ){
+			CSVLoader csv = new CSVLoader();
+			csv.setSource(arquivoCsv);
+			Instances instancias = csv.getDataSet();
+			return instancias;
+		}
+		return null;
+	}
+	
+	public Instances loadTxt(String urlFileTxt) throws IOException{
+		File arquivoTxt = new File(urlFileTxt);
+		if(arquivoTxt.exists()){
+			FileReader fr = new FileReader(arquivoTxt);
+			BufferedReader br = new BufferedReader(fr);
+			
+			String linha = br.readLine(); 
+			while(linha != null){
+				
+			}
+			fr.close();
+		}
+		return null;
+	}
+	
+	public void loadString(String linha){
+		
+		System.out.println( linha.split(",")[0] );
 	}
 }

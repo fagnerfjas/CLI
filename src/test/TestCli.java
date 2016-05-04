@@ -49,6 +49,11 @@ public class TestCli {
 		 classificador.salvaInstancia();
 	}
 	
+	@Test
+	public void testArquivos(){
+		classificador.loadString("palavra, palavra2");
+	}
+	
 	
 
 }
